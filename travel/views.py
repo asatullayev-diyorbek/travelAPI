@@ -7,11 +7,11 @@ from .models import Category, Video, Hotel, Tour
 class CategoryListView(APIView):
     def get(self, request):
         categories = Category.objects.all()
-        serializer = CategorySerializer(categories, many=True)
+        serializer = CategorySerializer(categories, many=True, context={'request': request})
         return Response(serializer.data)
 
     def post(self, request):
-        serializer = CategorySerializer(data=request.data)
+        serializer = CategorySerializer(data=request.data, context={'request': request})
         if serializer.is_valid():
             serializer.save()
             return Response({'status': 'success', 'message': 'Kategoriya qo\'shildi', 'data': serializer.data})
@@ -22,7 +22,7 @@ class CategoryDetailView(APIView):
     def get(self, request, pk):
         try:
             category = Category.objects.get(id=pk)
-            serializer = CategorySerializer(category)
+            serializer = CategorySerializer(category, context={'request': request})
             return Response(serializer.data)
         except Category.DoesNotExist:
             return Response({'message': 'Kategoriya topilmadi'}, status=404)
@@ -30,7 +30,7 @@ class CategoryDetailView(APIView):
     def put(self, request, pk):
         try:
             category = Category.objects.get(id=pk)
-            serializer = CategorySerializer(category, data=request.data)
+            serializer = CategorySerializer(category, data=request.data, context={'request': request})
             if serializer.is_valid():
                 serializer.save()
                 return Response({'status': 'success', 'message': 'Ma\'lumot yangilandi', 'data': serializer.data})
@@ -41,7 +41,7 @@ class CategoryDetailView(APIView):
     def patch(self, request, pk):
         try:
             category = Category.objects.get(id=pk)
-            serializer = CategorySerializer(category, data=request.data, partial=True)
+            serializer = CategorySerializer(category, data=request.data, partial=True, context={'request': request})
             if serializer.is_valid():
                 serializer.save()
                 return Response({'status': 'success', 'message': 'Ma\'lumot qisman yangilandi', 'data': serializer.data})
